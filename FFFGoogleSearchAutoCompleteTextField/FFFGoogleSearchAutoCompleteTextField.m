@@ -24,9 +24,9 @@
 
         _labelOriginalRect = frame;
         self.backgroundColor = [UIColor whiteColor];
-        self.layer.borderColor = [UIColor darkGrayColor].CGColor;
+        self.layer.borderColor = [UIColor colorWithWhite:0.551 alpha:1.000].CGColor;
         self.layer.borderWidth = 1.0;
-        self.layer.cornerRadius = 15.0;
+        self.layer.cornerRadius = 8.0;
 
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification
@@ -48,11 +48,14 @@
         UIBarButtonItem *closeItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStylePlain target:self action:@selector(dismissKeyboard:)];
         closeItem.width = 50.0;
 
+        UIColor *colorForBackForwardItem = [UIColor colorWithRed:0.372 green:0.560 blue:1.000 alpha:1.000];
+        
         UIBarButtonItem *backwardItem = [[UIBarButtonItem alloc] init];
         backwardItem.width = 20.0;
         UILabel *labelForBackwardItem = [[UILabel alloc] initWithFrame:CGRectMake(0, 7.0, 30.0, 20.0)];
+        labelForBackwardItem.font = [UIFont fontWithName:@"Arial" size:24.0];
         labelForBackwardItem.text = @"<";
-        labelForBackwardItem.textColor = [UIColor colorWithRed:0.245 green:0.464 blue:1.000 alpha:1.000];
+        labelForBackwardItem.textColor = colorForBackForwardItem;
         labelForBackwardItem.userInteractionEnabled = YES;
         backwardItem.customView = labelForBackwardItem;
         UITapGestureRecognizer *tapBackwardItem = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(moveCursorPositionPrevious)];
@@ -64,8 +67,9 @@
         UIBarButtonItem *forwardItem = [[UIBarButtonItem alloc] init];
         forwardItem.width = 20.0;
         UILabel *labelForForwardItem = [[UILabel alloc] initWithFrame:CGRectMake(0, 7.0, 30.0, 20.0)];
+        labelForForwardItem.font = [UIFont fontWithName:@"Arial" size:24.0];
         labelForForwardItem.text = @">";
-        labelForForwardItem.textColor = [UIColor colorWithRed:0.245 green:0.464 blue:1.000 alpha:1.000];
+        labelForForwardItem.textColor = colorForBackForwardItem;
         labelForForwardItem.userInteractionEnabled = YES;
         forwardItem.customView = labelForForwardItem;
         UITapGestureRecognizer *tapForwardItem = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(moveCursorPositionNext)];
@@ -161,12 +165,10 @@
 {
     CGRect keyboardFrame = [n.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
     float keyboardAnimationDuration = [n.userInfo[UIKeyboardAnimationDurationUserInfoKey] floatValue];
-    UIViewAnimationCurve keyboardAnimationCurve = [[n.userInfo
-                                                    objectForKey:UIKeyboardAnimationCurveUserInfoKey]
-                                                   integerValue];
+    UIViewAnimationCurve keyboardAnimationCurve = [n.userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue];
 
     [UIView animateWithDuration:keyboardAnimationDuration delay:0 options:(keyboardAnimationCurve << 16) animations:^{
-        self.center = CGPointMake(keyboardFrame.size.width/2.0, keyboardFrame.origin.y-self.frame.size.height/2.0);
+        self.center = CGPointMake(keyboardFrame.size.width/2.0, keyboardFrame.origin.y-self.frame.size.height/2.0-10.0);
     } completion:^(BOOL finished) {}];
 
 }

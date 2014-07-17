@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5E2802CC1977C49200698A34 /* duckduckgo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5E2802CA1977C49200698A34 /* duckduckgo@2x.png */; };
+		5E2802CD1977C49200698A34 /* google@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5E2802CB1977C49200698A34 /* google@2x.png */; };
 		5EF6DBE2197747570056EA86 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5EF6DBE1197747570056EA86 /* Foundation.framework */; };
 		5EF6DBE4197747570056EA86 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5EF6DBE3197747570056EA86 /* CoreGraphics.framework */; };
 		5EF6DBE6197747570056EA86 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5EF6DBE5197747570056EA86 /* UIKit.framework */; };
@@ -34,6 +36,8 @@
 
 /* Begin PBXFileReference section */
 		22B722765C8C464A9852B22D /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		5E2802CA1977C49200698A34 /* duckduckgo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "duckduckgo@2x.png"; sourceTree = "<group>"; };
+		5E2802CB1977C49200698A34 /* google@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "google@2x.png"; sourceTree = "<group>"; };
 		5EF6DBDE197747570056EA86 /* FFFGoogleSearchAutoCompleteTextField.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FFFGoogleSearchAutoCompleteTextField.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5EF6DBE1197747570056EA86 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		5EF6DBE3197747570056EA86 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -119,6 +123,8 @@
 				5EF6DC11197747A80056EA86 /* FFFGoogleSearchAutoCompleteController.m */,
 				5EF6DC16197747F30056EA86 /* FFFGoogleSearchAutoCompleteTextField */,
 				5EF6DBF3197747570056EA86 /* Images.xcassets */,
+				5E2802CA1977C49200698A34 /* duckduckgo@2x.png */,
+				5E2802CB1977C49200698A34 /* google@2x.png */,
 				5EF6DBE8197747570056EA86 /* Supporting Files */,
 			);
 			path = FFFGoogleSearchAutoCompleteTextField;
@@ -223,7 +229,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				5EF6DBEC197747570056EA86 /* InfoPlist.strings in Resources */,
+				5E2802CC1977C49200698A34 /* duckduckgo@2x.png in Resources */,
 				5EF6DBF4197747570056EA86 /* Images.xcassets in Resources */,
+				5E2802CD1977C49200698A34 /* google@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
