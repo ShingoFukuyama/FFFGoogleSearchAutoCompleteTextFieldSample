@@ -1,6 +1,6 @@
 # FFFGoogleSearchAutoCompleteTextFieldSample
 
-![Preview](https://github.com/ShingoFukuyama/FFFGoogleSearchAutoCompleteTextFieldSample/master/ss.gif)
+![Preview](https://raw.githubusercontent.com/ShingoFukuyama/FFFGoogleSearchAutoCompleteTextFieldSample/master/ss.gif)
 
 This is a sample code to implement google's autocomplete feature on iOS.
 
