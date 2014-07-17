@@ -4,6 +4,8 @@
 
 This is a sample code for implementing google's autocomplete feature on iOS.
 
+Also support DuckDuckGo's auto suggestion API.
+
 Any help and or corrections are welcome.
 
 ## Require
