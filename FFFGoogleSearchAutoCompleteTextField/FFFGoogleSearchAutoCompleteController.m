@@ -22,13 +22,27 @@ typedef NS_ENUM (NSUInteger, FFFAutoSuggestionAPI) {
 @property (nonatomic, strong) UITableView             *suggestionTable;
 @property (nonatomic, strong) NSMutableArray          *suggestions;
 @property (nonatomic, assign) FFFAutoSuggestionAPI    APIType;
+@property (nonatomic, strong) NSDictionary            *URLDictionaryForAPIs;
 @property (nonatomic, strong) UIButton                *googleButton;
 @property (nonatomic, strong) UIButton                *duckDuckGoButton;
+@property (nonatomic, strong) AFHTTPRequestOperation  *requestOperation;
 @end
 
 @implementation FFFGoogleSearchAutoCompleteController
 
 static NSString *FFFTableViewCellIdentifier = @"FFFTableViewCellIdentifier";
+
+- (instancetype)init
+{
+    if (self = [super init]) {
+
+        _URLDictionaryForAPIs =
+        @{@(FFFAutoSuggestionAPIGoogle):@"http://suggestqueries.google.com/complete/search?q=%@&client=toolbar",
+          @(FFFAutoSuggestionAPIDuckDuckGo):@"https://duckduckgo.com/ac/?q=%@"};
+
+    }
+    return self;
+}
 
 - (void)viewDidLoad
 {
@@ -42,18 +56,14 @@ static NSString *FFFTableViewCellIdentifier = @"FFFTableViewCellIdentifier";
                                                  name:UIKeyboardDidChangeFrameNotification
                                                object:nil];
 
-    _searchTextField = [[FFFGoogleSearchAutoCompleteTextField alloc] initWithFrame:CGRectMake(10.0, self.view.frame.size.height - 90.0, self.view.frame.size.width - 20.0, 32.0)];
+    _searchTextField = [[FFFGoogleSearchAutoCompleteTextField alloc] initWithFrame:CGRectMake(10.0,
+                                                                                              self.view.frame.size.height - 90.0,
+                                                                                              self.view.frame.size.width - 20.0,
+                                                                                              32.0)];
     _searchTextField.delegate = self;
     [_searchTextField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
     [self.view addSubview:_searchTextField];
 
-    [NSTimer scheduledTimerWithTimeInterval:1.0
-                                     target:[NSBlockOperation blockOperationWithBlock:^{
-        [_searchTextField becomeFirstResponder];
-    }] selector:@selector(main) userInfo:nil repeats:NO];
-    
-
-    
     _googleButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width/2.0-50.0-75.0,
                                                                self.view.frame.size.height/4.5,
                                                                100.0,
@@ -62,8 +72,8 @@ static NSString *FFFTableViewCellIdentifier = @"FFFTableViewCellIdentifier";
     _googleButton.layer.cornerRadius = 50.0;
     [self.view insertSubview:_googleButton atIndex:0];
     [_googleButton addTarget:self action:@selector(switchAPIToGoogle:) forControlEvents:UIControlEventTouchUpInside];
-    
-    
+
+
     _duckDuckGoButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width/2.0-50.0+75.0,
                                                                    self.view.frame.size.height/4.5,
                                                                    100.0,
@@ -72,27 +82,47 @@ static NSString *FFFTableViewCellIdentifier = @"FFFTableViewCellIdentifier";
     _duckDuckGoButton.layer.cornerRadius = 50.0;
     [self.view insertSubview:_duckDuckGoButton atIndex:0];
     [_duckDuckGoButton addTarget:self action:@selector(switchAPIToDuckDuckGo:) forControlEvents:UIControlEventTouchUpInside];
-    
+
+
     if (_APIType == FFFAutoSuggestionAPIGoogle) {
         _duckDuckGoButton.alpha = 0.2;
     } else {
         _duckDuckGoButton.alpha = 0.2;
     }
+
 }
 - (void)switchAPIToGoogle:(UIButton *)button
 {
     if (_APIType != FFFAutoSuggestionAPIGoogle) {
         _APIType = FFFAutoSuggestionAPIGoogle;
-        [UIView animateWithDuration:0.4 animations:^{ button.alpha = 1.0; }];
+        [UIView animateWithDuration:0.4
+                         animations:^{ button.alpha = 1.0; }
+                         completion:^(BOOL finished) {
+                             [NSTimer scheduledTimerWithTimeInterval:0.2
+                                                              target:[NSBlockOperation blockOperationWithBlock:^{
+                                 [_searchTextField becomeFirstResponder];
+                             }] selector:@selector(main) userInfo:nil repeats:NO];
+                         }];
         [UIView animateWithDuration:0.4 animations:^{ _duckDuckGoButton.alpha = 0.2; }];
+    } else {
+        [_searchTextField becomeFirstResponder];
     }
 }
 - (void)switchAPIToDuckDuckGo:(UIButton *)button
 {
     if (_APIType != FFFAutoSuggestionAPIDuckDuckGo) {
         _APIType = FFFAutoSuggestionAPIDuckDuckGo;
-        [UIView animateWithDuration:0.4 animations:^{ button.alpha = 1.0; }];
+        [UIView animateWithDuration:0.4
+                         animations:^{ button.alpha = 1.0; }
+                         completion:^(BOOL finished) {
+                             [NSTimer scheduledTimerWithTimeInterval:0.2
+                                                              target:[NSBlockOperation blockOperationWithBlock:^{
+                                 [_searchTextField becomeFirstResponder];
+                             }] selector:@selector(main) userInfo:nil repeats:NO];
+                         }];
         [UIView animateWithDuration:0.4 animations:^{ _googleButton.alpha = 0.2; }];
+    } else {
+        [_searchTextField becomeFirstResponder];
     }
 }
 - (void)showSuggestionTable
@@ -141,7 +171,6 @@ static NSString *FFFTableViewCellIdentifier = @"FFFTableViewCellIdentifier";
                     [self requestJSONWithQuery:_lastStringInSearchTextField];
                 default: break;
             }
-            
         }
     }
 }
@@ -157,50 +186,53 @@ static NSString *FFFTableViewCellIdentifier = @"FFFTableViewCellIdentifier";
 #pragma mark - JSON
 - (void)requestJSONWithQuery:(NSString *)query
 {
+    if (!_requestOperation.isCancelled) [_requestOperation cancel];
     query = [query stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    NSString *string = [NSString stringWithFormat:@"https://duckduckgo.com/ac/?q=%@", query];
+    NSString *string = [NSString stringWithFormat:_URLDictionaryForAPIs[@(_APIType)], query];
     NSURL *url = [NSURL URLWithString:string];
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
-    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
-    operation.responseSerializer = [AFJSONResponseSerializer serializer];
-    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
-        NSLog(@"--- %@", responseObject);
-        _suggestions = [(NSDictionary *)responseObject mutableArrayValueForKey:@"phrase"];
-        [self refreshSuggestionTable];
+    _requestOperation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+    _requestOperation.responseSerializer = [AFJSONResponseSerializer serializer];
+    __block FFFGoogleSearchAutoCompleteController *selfInBlock = self;
+    [_requestOperation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+        selfInBlock.suggestions = [(NSDictionary *)responseObject mutableArrayValueForKey:@"phrase"];
+        [selfInBlock refreshSuggestionTable];
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Error Retrieving Weather"
-                                                            message:[error localizedDescription]
-                                                           delegate:nil
-                                                  cancelButtonTitle:@"OKK"
-                                                  otherButtonTitles:nil];
-        [alertView show];
+        /*UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Error Retrieving Weather"
+         message:[error localizedDescription]
+         delegate:nil
+         cancelButtonTitle:@"OKK"
+         otherButtonTitles:nil];
+         [alertView show];*/
     }];
-    [operation start];
+    [_requestOperation start];
 }
 
 #pragma mark - XML
 - (void)requestXMLWithQuery:(NSString *)query
 {
+    if (!_requestOperation.isCancelled) [_requestOperation cancel];
     query = [query stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    NSString *string = [NSString stringWithFormat:@"http://suggestqueries.google.com/complete/search?q=%@&client=toolbar", query];
+    NSString *string = [NSString stringWithFormat:_URLDictionaryForAPIs[@(_APIType)], query];
     NSURL *url = [NSURL URLWithString:string];
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
-    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
-    operation.responseSerializer = [AFXMLParserResponseSerializer serializer];
-    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+    _requestOperation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+    _requestOperation.responseSerializer = [AFXMLParserResponseSerializer serializer];
+    __block FFFGoogleSearchAutoCompleteController *selfInBlock = self;
+    [_requestOperation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
         NSXMLParser *XMLParser = (NSXMLParser *)responseObject;
         [XMLParser setShouldProcessNamespaces:YES];
-        XMLParser.delegate = self;
+        XMLParser.delegate = selfInBlock;
         [XMLParser parse];
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Error retrieving suggestions"
-                                                            message:[error localizedDescription]
-                                                           delegate:nil
-                                                  cancelButtonTitle:@"OK"
-                                                  otherButtonTitles:nil];
-        [alertView show];
+        /*UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Error retrieving suggestions"
+         message:[error localizedDescription]
+         delegate:nil
+         cancelButtonTitle:@"OK"
+         otherButtonTitles:nil];
+         [alertView show];*/
     }];
-    [operation start];
+    [_requestOperation start];
 }
 - (void)parserDidStartDocument:(NSXMLParser *)parser
 {
