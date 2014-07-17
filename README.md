@@ -2,9 +2,9 @@
 
 ![Preview](https://raw.githubusercontent.com/ShingoFukuyama/FFFGoogleSearchAutoCompleteTextFieldSample/master/ss.gif)
 
-This is a sample code to implement google's autocomplete feature on iOS.
+This is a sample code for implementing google's autocomplete feature on iOS.
 
-Any help and or corrections is welcome.
+Any help and or corrections are welcome.
 
 ## Require
 * [AFNetworking 2.3](https://github.com/AFNetworking/AFNetworking)
